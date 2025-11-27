@@ -1,11 +1,12 @@
 from urllib import response
 from django.http import HttpResponse
-from django.views.generic import TemplateView,View
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView,View,UpdateView,DeleteView,CreateView
 from django.shortcuts import redirect, render
 from .models import InventoryItem,Category
 from project.settings import low_quantity
 from django.contrib import messages
-from .forms import RegistrationForm
+from .forms import RegistrationForm,InventoryItemForm
 from django.contrib.auth import authenticate 
 from django.contrib import auth
 
@@ -54,3 +55,32 @@ class SignUpView(View):
 
         
         return render(request,'inventory/signup.html',{'form':form})
+    
+class edit_item(UpdateView):
+    model=InventoryItem
+    form_class=InventoryItemForm
+    template_name='inventory/editform.html'
+    success_url = reverse_lazy('dashboard')
+
+class delete_item(DeleteView):
+    model=InventoryItem
+    # form_class=InventoryItemForm
+    template_name='inventory/delete.html'
+    success_url = reverse_lazy('dashboard')
+    context_object_name = 'item'
+
+class add_item(View):
+    def get(self, request):
+        form = InventoryItemForm()
+        return render(request, 'inventory/editform.html', {'form': form})
+
+    def post(self,request):
+        form=InventoryItemForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+        return render(request,'inventory/editform.html',{'form':form})
+	# model = InventoryItem
+	# form_class = InventoryItemForm
+	# template_name = 'inventory/editform.html'
+	# success_url = reverse_lazy('dashboard')
