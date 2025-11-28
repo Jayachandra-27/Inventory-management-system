@@ -21,7 +21,7 @@ class home(TemplateView):
 
 class dashboard(LoginRequiredMixin,View):
     def get(self,request):
-        items=InventoryItem.objects.all().order_by('-id')
+        items=InventoryItem.objects.all().order_by('id')
         low_inventory=InventoryItem.objects.filter(quantity__lte=low_quantity)
         
         if low_inventory.count() > 1:
